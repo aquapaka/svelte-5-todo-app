@@ -2,8 +2,10 @@
     import Bin from "$lib/components/icons/Bin.svelte";
     import { Jellyfish } from "svelte-loading-spinners";
     import "$lib/styles/customCheckboxes.scss";
+    import { send, receive } from "$lib/transitions/crossfade";
 
     type Todo = {
+        id: string;
         text: string;
         done: boolean;
     };
@@ -40,10 +42,11 @@
         if (event.key !== "Enter") return;
 
         const todoEl = event.target as HTMLInputElement;
+        const id = window.crypto.randomUUID();
         const text = todoEl.value;
         const done = false;
 
-        todos.unshift({ text, done });
+        todos.unshift({ id, text, done });
         todoEl.value = "";
     }
 
@@ -68,7 +71,7 @@
 >
     <div class="todo max-w-md flex flex-col gap-1">
         {#if isLoadingTodos}
-            <Jellyfish size="60" unit="px" color="white"/>
+            <Jellyfish size="60" unit="px" color="white" />
         {:else}
             <input
                 class="p-3 border-2 border-gray-600 rounded-md"
@@ -100,10 +103,16 @@
                 >
             </div>
 
-            {#each filteredTodos as todo, i}
+            {#if filteredTodos.length === 0}
+                <p class="text-gray-600 text-center">There is no note</p>
+            {/if}
+
+            {#each filteredTodos as todo (todo.id)}
                 <div
                     class:opacity-40={todo.done}
                     class="bg-gray-700 flex p-3 rounded-md duration-200 justify-end"
+                    in:receive={{key: todo.id}}
+                    out:send={{key: todo.id}}
                 >
                     <input
                         bind:value={todo.text}
@@ -113,7 +122,7 @@
                         id=""
                     />
                     <label class="mcui-checkbox">
-                        <input type="checkbox" bind:checked={todo.done}/>
+                        <input type="checkbox" bind:checked={todo.done} />
                         <div>
                             <svg
                                 class="mcui-check"
@@ -135,7 +144,7 @@
                         class:ml-2={isDeleting}
                         class:border-2={isDeleting}
                         onclick={() =>
-                            (todos = todos.filter((t) => t !== todo))}
+                            (todos = todos.filter((t) => t.id !== todo.id))}
                         ><Bin class="mx-auto text-red-600" /></button
                     >
                 </div>
