@@ -1,6 +1,8 @@
 <script lang="ts">
     import Bin from "$lib/components/icons/Bin.svelte";
     import { Jellyfish } from "svelte-loading-spinners";
+    import "$lib/styles/customCheckboxes.scss";
+
     type Todo = {
         text: string;
         done: boolean;
@@ -66,7 +68,7 @@
 >
     <div class="todo max-w-md flex flex-col gap-1">
         {#if isLoadingTodos}
-            <Jellyfish size="60" unit="px" />
+            <Jellyfish size="60" unit="px" color="white"/>
         {:else}
             <input
                 class="p-3 border-2 border-gray-600 rounded-md"
@@ -101,7 +103,7 @@
             {#each filteredTodos as todo, i}
                 <div
                     class:opacity-40={todo.done}
-                    class="bg-gray-700 flex p-3 gap-3 rounded-md duration-200"
+                    class="bg-gray-700 flex p-3 rounded-md duration-200 justify-end"
                 >
                     <input
                         bind:value={todo.text}
@@ -110,17 +112,30 @@
                         name=""
                         id=""
                     />
-                    <input
-                        bind:checked={todo.done}
-                        type="checkbox"
-                        name=""
-                        id=""
-                    />
+                    <label class="mcui-checkbox">
+                        <input type="checkbox" bind:checked={todo.done}/>
+                        <div>
+                            <svg
+                                class="mcui-check"
+                                viewBox="-2 -2 35 35"
+                                aria-hidden="true"
+                            >
+                                <title>checkmark-circle</title>
+                                <polyline
+                                    points="7.57 15.87 12.62 21.07 23.43 9.93"
+                                />
+                            </svg>
+                        </div>
+                        <div></div>
+                    </label>
                     <button
-                        class="border-2 border-red-800 rounded-md w-12 overflow-hidden duration-150"
+                        class="border-red-800 rounded-md overflow-hidden duration-150"
                         class:w-0={!isDeleting}
-                        class:border-0={!isDeleting}
-                        onclick={() => todos = todos.filter(t => t !== todo)}
+                        class:w-16={isDeleting}
+                        class:ml-2={isDeleting}
+                        class:border-2={isDeleting}
+                        onclick={() =>
+                            (todos = todos.filter((t) => t !== todo))}
                         ><Bin class="mx-auto text-red-600" /></button
                     >
                 </div>
