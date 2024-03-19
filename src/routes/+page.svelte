@@ -73,6 +73,7 @@
         {#if isLoadingTodos}
             <Jellyfish size="60" unit="px" color="white" />
         {:else}
+            <h1 class="text-2xl font-bold text-center mb-4">Svelte 5 Todos</h1>
             <input
                 class="p-3 border-2 border-gray-600 rounded-md"
                 onkeydown={addTodo}
